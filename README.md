@@ -24,7 +24,7 @@ A **production-ready Job Portal Backend API** built as the third internship task
 
 Built with **Node.js, Express, MongoDB (Mongoose) and JWT authentication** — same clean architecture as my previous internship projects (Banking System API + SaaS Subscription API).
 
-## 🔴 Live Demo
+## Live Demo
 
 **API is deployed and running here:**
 
@@ -38,37 +38,37 @@ Built with **Node.js, Express, MongoDB (Mongoose) and JWT authentication** — s
 
 > Use the live URL as `baseUrl` in Postman to test without local setup.
 
-## ✨ Features
+## Features
 
-- **🔐 Authentication & Roles**
+- **Authentication & Roles**
   - Signup / Login with JWT authentication
   - Secure password hashing with bcrypt
   - Role selection during signup: `candidate` | `employer`
   - Role-based access control
 
-- **💼 Employer Features**
+- **Employer Features**
   - Create, edit, delete job postings (owner only)
   - View all posted jobs — `GET /jobs/employer/me`
   - Track applications for own jobs
   - Update application status (bonus) — `Applied` → `Shortlisted` / `Rejected`
 
-- **🎓 Candidate Features**
+- **Candidate Features**
   - View all jobs with pagination
   - Search by keyword, location, job type, company
   - Apply for jobs (one application per job enforced)
   - View applied jobs with status tracking
 
-- **📋 Job Management**
+- **Job Management**
   - Fields: title, company, location, salary, description, requirements, jobType, employer, timestamps
   - Job types: `Full-time`, `Part-time`, `Internship`
   - Full-text search index + filters + sorting (`newest`, `oldest`, `salary_asc`, `salary_desc`)
 
-- **📨 Application System (Bonus Included)**
+- **Application System (Bonus Included)**
   - Prevent duplicate applications via unique compound index
   - Candidate: `GET /my-applications`
   - Employer: `GET /job-applications` (filter by `jobId` or `status`)
 
-## 🛡️ Security
+## Security
 
 - Passwords hashed with bcrypt
 - JWT protected routes + role-based middleware
@@ -76,7 +76,7 @@ Built with **Node.js, Express, MongoDB (Mongoose) and JWT authentication** — s
 - Employer ownership checks (only owner can edit/delete job or update status)
 - Duplicate application prevention via MongoDB unique index
 
-## 🧰 Tech Stack
+## Tech Stack
 
 | Layer | Technology |
 |---|---|
@@ -89,7 +89,7 @@ Built with **Node.js, Express, MongoDB (Mongoose) and JWT authentication** — s
 | Tests | Jest 29 + Supertest + mongodb-memory-server |
 | DevOps | Docker & Docker Compose, Vercel |
 
-## 🚀 Getting Started
+## Getting Started
 
 ### With Docker (recommended)
 
@@ -123,7 +123,7 @@ No setup needed — set Postman `baseUrl` to:
 https://jobportal-yhaayuu.vercel.app
 ```
 
-## 🔧 Environment Variables
+## Environment Variables
 
 | Variable | Description | Default |
 |---|---|---|
@@ -134,7 +134,7 @@ https://jobportal-yhaayuu.vercel.app
 | `JWT_EXPIRES_IN` | Token lifetime | `1d` |
 | `BCRYPT_ROUNDS` | Password hashing rounds | `10` |
 
-## 📚 API Overview
+## API Overview
 
 All routes prefixed with `/api`. Protected routes need `Authorization: Bearer <token>`
 
@@ -182,7 +182,7 @@ GET https://jobportal-yhaayuu.vercel.app/api/jobs?search=Developer&location=Casa
 | GET | `/` | Welcome + endpoint list |
 | GET | `/health` | Health check |
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 src/
@@ -200,7 +200,7 @@ postman/
 └── postman_collection.json
 ```
 
-## 🗄️ Database Design
+## Database Design
 
 **Users:** id, name, email, password, role (`candidate`/`employer`), timestamps
 
@@ -208,7 +208,7 @@ postman/
 
 **Applications:** id, job_id, candidate_id, status (`Applied`/`Shortlisted`/`Rejected`), timestamps — Unique index on `(job, candidate)`
 
-## 🔒 Access Control
+## Access Control
 
 - Only **employers** can manage jobs
 - Only **candidates** can apply
@@ -217,7 +217,7 @@ postman/
 - Candidate can only view **own** applications
 - Middleware: `verifyToken` + `requireRole('candidate'|'employer')`
 
-## 🧪 Testing
+## Testing
 
 ### Postman
 
@@ -249,7 +249,7 @@ PASS tests/jobPortal.test.js
   10 passed
 ```
 
-## 📜 Scripts
+## Scripts
 
 | Script | Description |
 |---|---|
@@ -257,7 +257,7 @@ PASS tests/jobPortal.test.js
 | `npm start` | Run production (`node src/server.js`) |
 | `npm test` | Run Jest tests (`node --experimental-vm-modules`) |
 
-## 🌐 Deployment
+## Deployment
 
 Deployed on **Vercel** — Live at **[https://jobportal-yhaayuu.vercel.app/](https://jobportal-yhaayuu.vercel.app/)**
 
