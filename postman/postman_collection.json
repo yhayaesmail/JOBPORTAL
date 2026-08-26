@@ -1,0 +1,447 @@
+{
+  "info": {
+    "name": "Job Portal Backend API",
+    "description": "Postman collection for Job Portal Backend API\n\nAutomatically saves tokens and IDs for chained requests.\n\nBase URL defaults to http://localhost:5002",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5002", "type": "string" },
+    { "key": "candidateToken", "value": "", "type": "string" },
+    { "key": "employerToken", "value": "", "type": "string" },
+    { "key": "jobId", "value": "", "type": "string" },
+    { "key": "applicationId", "value": "", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/health", "host": ["{{baseUrl}}"], "path": ["health"] }
+          }
+        },
+        {
+          "name": "Welcome Route",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/", "host": ["{{baseUrl}}"], "path": [""] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Signup - Candidate",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201 || pm.response.code === 200) {",
+                  "  const json = pm.response.json();",
+                  "  if (json.data && json.data.token) {",
+                  "    pm.collectionVariables.set('candidateToken', json.data.token);",
+                  "    console.log('Candidate token saved');",
+                  "  }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Salma El Fassi\",\n  \"email\": \"salma.elfassi@gmail.com\",\n  \"password\": \"Password123\",\n  \"role\": \"candidate\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/signup", "host": ["{{baseUrl}}"], "path": ["api", "signup"] },
+            "description": "Register as candidate. Token auto-saved to candidateToken"
+          }
+        },
+        {
+          "name": "Signup - Employer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201 || pm.response.code === 200) {",
+                  "  const json = pm.response.json();",
+                  "  if (json.data && json.data.token) {",
+                  "    pm.collectionVariables.set('employerToken', json.data.token);",
+                  "    console.log('Employer token saved');",
+                  "  }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Karim Bensouda\",\n  \"email\": \"karim.bensouda@atlasdigital.ma\",\n  \"password\": \"Password123\",\n  \"role\": \"employer\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/signup", "host": ["{{baseUrl}}"], "path": ["api", "signup"] },
+            "description": "Register as employer. Token auto-saved to employerToken"
+          }
+        },
+        {
+          "name": "Login - Candidate",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const json = pm.response.json();",
+                  "  if (json.data && json.data.token) {",
+                  "    pm.collectionVariables.set('candidateToken', json.data.token);",
+                  "  }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"salma.elfassi@gmail.com\",\n  \"password\": \"Password123\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/login", "host": ["{{baseUrl}}"], "path": ["api", "login"] }
+          }
+        },
+        {
+          "name": "Login - Employer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const json = pm.response.json();",
+                  "  if (json.data && json.data.token) {",
+                  "    pm.collectionVariables.set('employerToken', json.data.token);",
+                  "  }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"karim.bensouda@atlasdigital.ma\",\n  \"password\": \"Password123\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/login", "host": ["{{baseUrl}}"], "path": ["api", "login"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Jobs",
+      "item": [
+        {
+          "name": "Create Job (Employer)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const json = pm.response.json();",
+                  "  if (json.data && json.data.job && json.data.job._id) {",
+                  "    pm.collectionVariables.set('jobId', json.data.job._id);",
+                  "    console.log('Job ID saved: ' + json.data.job._id);",
+                  "  }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{employerToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Senior Full Stack Developer\",\n  \"company\": \"Atlas Digital\",\n  \"location\": \"Casablanca\",\n  \"salary\": 32000,\n  \"description\": \"Atlas Digital is looking for a Senior Full Stack Developer to build scalable web platforms for our enterprise clients. You will work with MERN stack, design REST APIs, and collaborate with UX teams.\",\n  \"requirements\": \"5+ years with Node.js, React, MongoDB, Express, REST APIs, Docker, Git. Experience with agile teams preferred.\",\n  \"jobType\": \"Full-time\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/jobs", "host": ["{{baseUrl}}"], "path": ["api", "jobs"] }
+          }
+        },
+        {
+          "name": "Create Job - Internship Example",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{employerToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"UX/UI Design Intern\",\n  \"company\": \"Inetum Morocco\",\n  \"location\": \"Rabat\",\n  \"salary\": 5000,\n  \"description\": \"Join Inetum Morocco as a UX/UI Design Intern. Work on real client projects, create wireframes and prototypes, and learn from senior designers in a fast-paced environment.\",\n  \"requirements\": \"Knowledge of Figma, Adobe XD, HTML, CSS. Portfolio required. Currently enrolled in design or related field.\",\n  \"jobType\": \"Internship\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/jobs", "host": ["{{baseUrl}}"], "path": ["api", "jobs"] }
+          }
+        },
+        {
+          "name": "Get All Jobs (Public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/jobs", "host": ["{{baseUrl}}"], "path": ["api", "jobs"] }
+          }
+        },
+        {
+          "name": "Search Jobs - by keyword",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/jobs?search=Developer&location=Casablanca&jobType=Full-time",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "jobs"],
+              "query": [
+                { "key": "search", "value": "Developer" },
+                { "key": "location", "value": "Casablanca" },
+                { "key": "jobType", "value": "Full-time" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Search Jobs - with pagination",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/jobs?page=1&limit=5&sort=newest",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "jobs"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "5" },
+                { "key": "sort", "value": "newest" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Job by ID (Public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/jobs/{{jobId}}", "host": ["{{baseUrl}}"], "path": ["api", "jobs", "{{jobId}}"] }
+          }
+        },
+        {
+          "name": "Update Job (Employer Owner)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{employerToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"salary\": 35000,\n  \"location\": \"Rabat\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/jobs/{{jobId}}", "host": ["{{baseUrl}}"], "path": ["api", "jobs", "{{jobId}}"] }
+          }
+        },
+        {
+          "name": "Get My Posted Jobs (Employer)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{employerToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/jobs/employer/me", "host": ["{{baseUrl}}"], "path": ["api", "jobs", "employer", "me"] }
+          }
+        },
+        {
+          "name": "Delete Job (Employer Owner)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{employerToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/jobs/{{jobId}}", "host": ["{{baseUrl}}"], "path": ["api", "jobs", "{{jobId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Applications",
+      "item": [
+        {
+          "name": "Apply for Job (Candidate) - POST /apply/:jobId",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const json = pm.response.json();",
+                  "  if (json.data && json.data.application && json.data.application._id) {",
+                  "    pm.collectionVariables.set('applicationId', json.data.application._id);",
+                  "    console.log('Application ID saved: ' + json.data.application._id);",
+                  "  }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{candidateToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/apply/{{jobId}}", "host": ["{{baseUrl}}"], "path": ["api", "apply", "{{jobId}}"] },
+            "description": "Official: POST /apply/:jobId - candidate applies"
+          }
+        },
+        {
+          "name": "Get My Applications (Candidate) - GET /my-applications",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{candidateToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/my-applications", "host": ["{{baseUrl}}"], "path": ["api", "my-applications"] }
+          }
+        },
+        {
+          "name": "Get My Applications - filtered by status",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{candidateToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/my-applications?status=Applied",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "my-applications"],
+              "query": [{ "key": "status", "value": "Applied" }]
+            }
+          }
+        },
+        {
+          "name": "Get Job Applications (Employer) - GET /job-applications",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{employerToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/job-applications", "host": ["{{baseUrl}}"], "path": ["api", "job-applications"] },
+            "description": "Official: GET /job-applications - employer views all applications for his jobs"
+          }
+        },
+        {
+          "name": "Get Job Applications - Filter by Job",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{employerToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/job-applications?jobId={{jobId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "job-applications"],
+              "query": [{ "key": "jobId", "value": "{{jobId}}" }]
+            }
+          }
+        },
+        {
+          "name": "Get Job Applications via Param - GET /job-applications/:jobId",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{employerToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/job-applications/{{jobId}}", "host": ["{{baseUrl}}"], "path": ["api", "job-applications", "{{jobId}}"] }
+          }
+        },
+        {
+          "name": "Update Application Status (Employer Bonus) - PATCH /applications/:id/status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{employerToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Shortlisted\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/applications/{{applicationId}}/status", "host": ["{{baseUrl}}"], "path": ["api", "applications", "{{applicationId}}", "status"] }
+          }
+        },
+        {
+          "name": "Update Application Status - Rejected",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{employerToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Rejected\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/applications/{{applicationId}}/status", "host": ["{{baseUrl}}"], "path": ["api", "applications", "{{applicationId}}", "status"] }
+          }
+        },
+        {
+          "name": "Get Single Application - GET /applications/:id",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{candidateToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/applications/{{applicationId}}", "host": ["{{baseUrl}}"], "path": ["api", "applications", "{{applicationId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Negative Tests",
+      "item": [
+        {
+          "name": "Candidate trying to create job (should fail 403)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{candidateToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Should Fail\",\n  \"company\": \"Atlas Digital\",\n  \"location\": \"Nowhere\",\n  \"salary\": 1000,\n  \"description\": \"This should fail because candidate cannot create jobs\",\n  \"requirements\": \"None\",\n  \"jobType\": \"Full-time\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/jobs", "host": ["{{baseUrl}}"], "path": ["api", "jobs"] }
+          }
+        },
+        {
+          "name": "Employer trying to apply (should fail 403)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{employerToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/apply/{{jobId}}", "host": ["{{baseUrl}}"], "path": ["api", "apply", "{{jobId}}"] }
+          }
+        },
+        {
+          "name": "Apply without token (should fail 401)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/apply/{{jobId}}", "host": ["{{baseUrl}}"], "path": ["api", "apply", "{{jobId}}"] }
+          }
+        }
+      ]
+    }
+  ]
+}
