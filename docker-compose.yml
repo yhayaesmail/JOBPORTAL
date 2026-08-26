@@ -1,0 +1,32 @@
+services:
+  api:
+    build: .
+    container_name: job_portal_api
+    ports:
+      - "5002:5002"
+    env_file:
+      - .env
+    environment:
+      MONGO_URI: mongodb://mongo:27017/job_portal?replicaSet=rs0
+    depends_on:
+      mongo:
+        condition: service_healthy
+    restart: unless-stopped
+
+  mongo:
+    image: mongo:7
+    container_name: job_portal_mongo
+    command: ["--replSet", "rs0", "--bind_ip_all"]
+    ports:
+      - "27019:27017"
+    volumes:
+      - job_portal_mongo_data:/data/db
+    healthcheck:
+      test: mongosh --quiet --eval "try { rs.status().ok } catch (e) { rs.initiate().ok }"
+      interval: 5s
+      timeout: 10s
+      retries: 10
+    restart: unless-stopped
+
+volumes:
+  job_portal_mongo_data:
